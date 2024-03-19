@@ -11,7 +11,7 @@ class CustomEventArgs : EventArgs
 class EventBus
 {
     private static readonly EventBus _EventBusInstance = new EventBus();
-    private readonly Dictionary<object, List<Action<CustomEventArgs>>> _actions = new Dictionary<object, List<Action<CustomEventArgs>>>();
+    private readonly Dictionary<object, List<Action<CustomEventArgs>>> _publishers = new Dictionary<object, List<Action<CustomEventArgs>>>();
 
     public static EventBus Instance => _EventBusInstance;
 
@@ -19,26 +19,26 @@ class EventBus
 
     public void Subscribe(object publisher, Action<CustomEventArgs> eventHandler)
     {
-        if (!_actions.ContainsKey(publisher))
+        if (!_publishers.ContainsKey(publisher))
         {
-            _actions.Add(publisher, new List<Action<CustomEventArgs>>());
+            _publishers.Add(publisher, new List<Action<CustomEventArgs>>());
         }
-        _actions[publisher].Add(eventHandler);
+        _publishers[publisher].Add(eventHandler);
     }
 
     public void Unsubscribe(object publisher, Action<CustomEventArgs> eventHandler)
     {
-        if (_actions.ContainsKey(publisher))
+        if (_publishers.ContainsKey(publisher))
         {
-            _actions[publisher].Remove(eventHandler);
+            _publishers[publisher].Remove(eventHandler);
         }
     }
 
     public void Publish(object publisher, CustomEventArgs args)
     {
-        if (_actions.ContainsKey(publisher))
+        if (_publishers.ContainsKey(publisher))
         {
-            foreach (var action in _actions[publisher])
+            foreach (var action in _publishers[publisher])
             {
                 action(args);
             }
